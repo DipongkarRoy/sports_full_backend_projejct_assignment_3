@@ -1,12 +1,13 @@
-import express, { NextFunction, Request, Response, json } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 const app = express();
 import cors from 'cors';
-import { movieRouters } from './module/movie/movie.routes';
+import router from './routes/Router';
+import globalError from './utils/globalError';
 
 app.use(cors());
 app.use(express.json());
 
-app.use('/api', movieRouters);
+app.use('/api/v1', router);
 
 app.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -24,13 +25,7 @@ app.all('*', (req: Request, res: Response) => {
     massage: 'Router not found data',
   });
 });
-app.use((error: any, req: Request, res: Response, next: NextFunction) => {
-  if (error) {
-    res.status(400).json({
-      success: false,
-      massage: 'error handle data',
-    });
-  }
-});
 
- export default app;
+app.use(globalError);
+
+export default app;
