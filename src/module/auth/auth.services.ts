@@ -1,5 +1,7 @@
+import config from '../../app/config';
 import { TUser } from '../user/user.interface';
 import { UserModel } from '../user/user.model';
+import { TLoginUser } from './auth.interface';
 import { ispasswordMacthed } from './auth.utlis';
 import jwt from 'jsonwebtoken'
 
@@ -14,7 +16,7 @@ const register = async (payload: TUser) => {
   return result;
 };
 
-const login = async (payload: TUser) => {
+const login = async (payload: TLoginUser) => {
   const user = await UserModel.findOne({ email:payload.email }).select('+password');
 
   if (!user) {
@@ -33,14 +35,14 @@ const login = async (payload: TUser) => {
   };
 
   const accessToken = jwt.sign(
-    { jwtPayload },'1d',
+    { jwtPayload },config.access_token as string,
     {
-      expiresIn: '7d'
+      expiresIn: config.access_token_expired
     },
   );
   const refressToken = jwt.sign(
-    { payload },'3d',
-    { expiresIn: '30d' },
+    { payload },config.refress_token as string,
+    { expiresIn: config.refresh_token_expired },
   );
 
   return {
